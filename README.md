@@ -8,7 +8,48 @@ planned work. Add `-Apply` to install packages and apply settings.
 
 ## Usage
 
-From an elevated Windows PowerShell prompt:
+### Bootstrap a clean machine
+
+From an elevated Windows PowerShell prompt, run the remote bootstrap script. The
+default run clones the repo and invokes the main setup in dry-run mode:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Jawvig/dev-machine-setup/main/bootstrap.ps1).Content))
+```
+
+To install packages and apply settings:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Jawvig/dev-machine-setup/main/bootstrap.ps1).Content)) -Apply -AcceptAgreements
+```
+
+If you want to inspect the bootstrap script before running it:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Jawvig/dev-machine-setup/main/bootstrap.ps1 -OutFile .\bootstrap.ps1
+notepad .\bootstrap.ps1
+.\bootstrap.ps1 -Apply -AcceptAgreements
+```
+
+The bootstrap script exists only to solve first acquisition on a clean machine:
+it ensures `winget` is available using Microsoft's documented App Installer
+registration and repair paths, installs Git, clones this repo, then delegates to
+`Setup-DevMachine.ps1`.
+
+If remote script execution is blocked, download the GitHub ZIP archive instead:
+
+```powershell
+Invoke-WebRequest -UseBasicParsing https://github.com/Jawvig/dev-machine-setup/archive/refs/heads/main.zip -OutFile .\dev-machine-setup.zip
+Expand-Archive .\dev-machine-setup.zip -DestinationPath .
+cd .\dev-machine-setup-main
+.\Setup-DevMachine.ps1 -Apply -AcceptAgreements
+```
+
+### Run an existing clone
+
+From an elevated Windows PowerShell prompt inside this repo:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
