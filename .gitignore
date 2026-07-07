@@ -1,0 +1,6 @@
+artifacts/
+logs/
+*.log
+*.tmp
+*.bak
+_winget-export-probe.json

@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "packages": [
+    { "id": "XP8CBJ40XLBWKX", "name": "Docker Desktop", "group": "containers", "reason": "Container development runtime." }
+  ]
+}

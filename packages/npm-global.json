@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "packages": [
+    { "id": "@playwright/cli", "name": "Playwright CLI", "group": "test", "reason": "Browser automation CLI." }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "packages": [
+    { "id": "azure-functions-core-tools", "name": "Azure Functions Core Tools", "group": "cloud", "reason": "Installed through Chocolatey to match current working setup." },
+    { "id": "handle", "name": "Handle", "group": "sysinternals", "reason": "Sysinternals handle utility." },
+    { "id": "procexp", "name": "Process Explorer", "group": "sysinternals", "reason": "Sysinternals process explorer." },
+    { "id": "terraform", "name": "Terraform", "group": "infrastructure", "reason": "Infrastructure as code CLI." },
+    { "id": "claude-code", "name": "Claude Code", "group": "ai", "reason": "Chocolatey package for Claude Code CLI." }
+  ]
+}
