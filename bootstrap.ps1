@@ -35,9 +35,24 @@ function Initialize-NetworkSecurityProtocol {
 }
 
 function Update-CurrentProcessPath {
+    foreach ($scope in @("Machine", "User")) {
+        $variables = [Environment]::GetEnvironmentVariables($scope)
+        foreach ($name in $variables.Keys) {
+            if ($name -ieq "Path") {
+                continue
+            }
+            Set-Item -Path "Env:$name" -Value $variables[$name]
+        }
+    }
+
     $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
     $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-    $env:Path = ($machinePath, $userPath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join ";"
+    $combinedPath = ($machinePath, $userPath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }) -join ";"
+
+    # Machine/User Path entries can contain unexpanded references (e.g. "%NVM_HOME%")
+    # that GetEnvironmentVariable does not resolve. Expand them now that the
+    # variables they reference have just been refreshed above.
+    $env:Path = [Environment]::ExpandEnvironmentVariables($combinedPath)
 }
 
 function Invoke-ExternalCommand {
@@ -49,7 +64,7 @@ function Invoke-ExternalCommand {
     $previous = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        & $FilePath @Arguments
+        & $FilePath @Arguments | Out-Host
         return $LASTEXITCODE
     } finally {
         $ErrorActionPreference = $previous

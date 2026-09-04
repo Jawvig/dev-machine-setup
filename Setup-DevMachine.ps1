@@ -8,17 +8,29 @@ param(
     [switch]$SkipNpm,
     [switch]$SkipStore,
     [string]$NodeVersion = "lts",
-    [string]$ManifestsRoot = (Join-Path $PSScriptRoot "packages")
+    [string]$ManifestsRoot
 )
 
 $ErrorActionPreference = "Stop"
 
-. (Join-Path $PSScriptRoot "scripts\DevMachine.Common.ps1")
-. (Join-Path $PSScriptRoot "scripts\Install-WingetPackages.ps1")
-. (Join-Path $PSScriptRoot "scripts\Install-ChocolateyPackages.ps1")
-. (Join-Path $PSScriptRoot "scripts\Install-NpmGlobalPackages.ps1")
-. (Join-Path $PSScriptRoot "scripts\Install-StorePackages.ps1")
-. (Join-Path $PSScriptRoot "scripts\Invoke-DeveloperSettings.ps1")
+$ScriptRoot = $PSScriptRoot
+if ([string]::IsNullOrEmpty($ScriptRoot)) {
+    $ScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+}
+if ([string]::IsNullOrEmpty($ScriptRoot)) {
+    throw "Unable to determine the directory of Setup-DevMachine.ps1. Run it from a saved .ps1 file (e.g. 'powershell.exe -File Setup-DevMachine.ps1'), not pasted or piped directly into a shell."
+}
+
+if ([string]::IsNullOrEmpty($ManifestsRoot)) {
+    $ManifestsRoot = Join-Path $ScriptRoot "packages"
+}
+
+. (Join-Path $ScriptRoot "scripts\DevMachine.Common.ps1")
+. (Join-Path $ScriptRoot "scripts\Install-WingetPackages.ps1")
+. (Join-Path $ScriptRoot "scripts\Install-ChocolateyPackages.ps1")
+. (Join-Path $ScriptRoot "scripts\Install-NpmGlobalPackages.ps1")
+. (Join-Path $ScriptRoot "scripts\Install-StorePackages.ps1")
+. (Join-Path $ScriptRoot "scripts\Invoke-DeveloperSettings.ps1")
 
 $summary = New-SetupSummary
 $mode = if ($Apply) { "APPLY" } else { "PLAN" }
@@ -78,7 +90,7 @@ if (-not $SkipNpm) {
 }
 
 if (-not $SkipSettings) {
-    Invoke-DeveloperSettings -ConfigurationPath (Join-Path $PSScriptRoot "dev-config.winget") -Apply:$Apply -AcceptAgreements:$AcceptAgreements -Summary $summary
+    Invoke-DeveloperSettings -ConfigurationPath (Join-Path $ScriptRoot "dev-config.winget") -Apply:$Apply -AcceptAgreements:$AcceptAgreements -Summary $summary
 } else {
     Add-SetupResult -Summary $summary -Status "Skipped" -Name "Developer settings" -Message "Skipped by switch."
 }
