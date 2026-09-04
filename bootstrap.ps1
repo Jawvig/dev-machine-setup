@@ -49,7 +49,7 @@ function Invoke-ExternalCommand {
     $previous = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        & $FilePath @Arguments
+        & $FilePath @Arguments | Out-Host
         return $LASTEXITCODE
     } finally {
         $ErrorActionPreference = $previous
