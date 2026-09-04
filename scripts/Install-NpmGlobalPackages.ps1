@@ -5,9 +5,16 @@ function Use-ConfiguredNode {
         [Parameter(Mandatory = $true)]$Summary
     )
 
+    if ($Apply -and -not (Test-Command "nvm")) {
+        for ($attempt = 0; $attempt -lt 6 -and -not (Test-Command "nvm"); $attempt++) {
+            Start-Sleep -Milliseconds 500
+            Update-CurrentProcessPath
+        }
+    }
+
     if (-not (Test-Command "nvm")) {
         if ($Apply) {
-            Add-SetupResult -Summary $Summary -Status "Manual" -Name "NVM for Windows" -Message "Install or re-open PowerShell after winget installs NVM."
+            Add-SetupResult -Summary $Summary -Status "Manual" -Name "NVM for Windows" -Message "nvm was still not found on PATH after installing it and waiting a few seconds. Re-open PowerShell and re-run this script."
         } else {
             Add-SetupResult -Summary $Summary -Status "Planned" -Name "NVM for Windows" -Message "Would use NVM after winget installs it."
         }
